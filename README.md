@@ -1,72 +1,69 @@
-<p align="center">
-  <img src="https://raw.githubusercontent.com/Lucineer/capitaine/master/docs/capitaine-logo.jpg" alt="Cocapn" width="120">
-</p>
+# ShipLog
 
-<h1 align="center">Shiplog</h1>
+A package tracking agent you run yourself. It polls carriers, logs updates to your git repository, and can notify you—all without sending your data to a third-party service.
 
-<p align="center">Maritime operations and vessel tracking agent. Part of the Lucineer fleet.</p>
+Live Example: https://the-fleet.casey-digennaro.workers.dev/shiplog
 
-<p align="center">
-  <a href="#quick-start">Quick Start</a> ·
-  <a href="#the-fleet">The Fleet</a> ·
-  <a href="https://github.com/Lucineer/capitaine">Capitaine</a>
-</p>
+---
+
+## What This Is For
+You manage packages for projects, teams, or clients. Most trackers are built as data-harvesting SaaS. This is different: you fork the code, deploy it to your own Cloudflare account, and provide your own carrier API keys. Your tracking history and configuration live in your repository, not on a company server.
+
+It is built on the open-source Cocapn agent runtime, designed for fork-first development.
+
+---
+
+## How It Works
+- **Self-Deployed Agent:** You deploy this code as a Cloudflare Worker. It executes on your infrastructure.
+- **Repository as Memory:** The agent reads its task list (tracking numbers) from your repository and writes all status updates back as commits.
+- **Scheduled Execution:** It runs on a cron schedule you control, fetching updates from carrier APIs using your stored credentials.
+- **Optional Coordination:** It can send webhook alerts and is compatible with the Cocapn Fleet protocol for inter-agent communication.
+
+---
+
+## What It Does
+*   Runs as a scheduled Cloudflare Worker (no servers to manage).
+*   Fetches status from UPS and USPS APIs (extensible to other carriers).
+*   Commits all package status changes directly to your git repository, creating a permanent, auditable log.
+*   Stores all API keys and configuration as secrets in your Worker, never exposed in code.
+*   Can be modified to send notifications via webhook, email, or other agents.
+
+---
+
+## Limitations
+Status accuracy and update frequency depend on the external carrier APIs. This agent polls them but cannot control their data or latency.
 
 ---
 
 ## Quick Start
+1.  **Fork this repository.**
+2.  Deploy to Cloudflare Workers using Wrangler:
+    ```bash
+    npm install
+    wrangler deploy
+    ```
+3.  Add your carrier API keys as Worker secrets:
+    ```bash
+    wrangler secret put UPS_API_KEY
+    wrangler secret put USPS_API_KEY
+    ```
+4.  Add tracking numbers to the `packages.json` file in your repo and commit. The agent will process them on its next scheduled run.
 
-```bash
-git clone https://github.com/Lucineer/shiplog.git
-cd shiplog
-# Follow repo-specific setup instructions
-```
+---
 
-## The Fleet
+## Contributing
+The best way to build on ShipLog is to fork it and adapt it to your needs. For bug fixes or minor improvements to the core agent, pull requests are welcome.
 
-Shiplog is one of 110+ vessels in the Lucineer fleet. Every vessel is a git-native repo-agent — the repo IS the agent.
-
-<details>
-<summary><strong>⚓ The Fleet</strong></summary>
-
-**Flagship vessels**
-- [Capitaine (flagship)](https://github.com/Lucineer/capitaine)
-- [personallog-ai](https://github.com/Lucineer/personallog-ai)
-- [businesslog-ai](https://github.com/Lucineer/businesslog-ai)
-- [studylog-ai](https://github.com/Lucineer/studylog-ai)
-- [makerlog-ai](https://github.com/Lucineer/makerlog-ai)
-- [playerlog-ai](https://github.com/Lucineer/playerlog-ai)
-- [dmlog-ai](https://github.com/Lucineer/dmlog-ai)
-- [reallog-ai](https://github.com/Lucineer/reallog-ai)
-- [deckboss-ai](https://github.com/Lucineer/deckboss-ai)
-
-**Fleet services**
-- [Git-Agent (minimal)](https://github.com/Lucineer/git-agent)
-- [Fleet Catalog](https://github.com/Lucineer/capitaine/blob/master/docs/fleet/FLEET.md)
-- [Fleet Orchestrator](https://github.com/Lucineer/fleet-orchestrator)
-- [Dead Reckoning Engine](https://github.com/Lucineer/dead-reckoning-engine)
-- [Dream Engine](https://github.com/Lucineer/dream-engine)
-- [Seed UI](https://github.com/Lucineer/seed-ui)
-
-**For power users**
-- [Cocapn Lite (tabula rasa)](https://github.com/Lucineer/cocapn-lite)
-- [Cocapn (core)](https://github.com/Lucineer/cocapn)
-- [ZeroClaw (framework)](https://github.com/Lucineer/zeroclaw)
-
-[View all 110+ repos →](https://github.com/orgs/Lucineer/repositories)
-[Fleet manifest →](https://github.com/Lucineer/capitaine/blob/master/docs/fleet/FLEET.md)
-
-</details>
-
-## Philosophy
-
-> The repo IS the agent. Fork it, give it a heartbeat, and wake up tomorrow to see where it sailed in the night.
-
-- **Fork-first** — Power users fork and customize. Casual users visit the domain.
-- **Git as ground truth** — The commit graph IS the state of the world.
-- **BYOK v2** — Zero keys in code. All keys via secrets store.
-- **Soft actualization** — Vessels evolve gently based on usage, not hard updates.
+---
 
 ## License
+MIT
 
-MIT · Superinstance & Lucineer (DiGennaro et al.)
+Superinstance & Lucineer (DiGennaro et al.)
+
+---
+
+<div align="center">
+  <a href="https://the-fleet.casey-digennaro.workers.dev">The Fleet</a> •
+  <a href="https://cocapn.ai">Cocapn</a>
+</div>
