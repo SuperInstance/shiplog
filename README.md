@@ -1,60 +1,53 @@
-# ShipLog
+# ShipLog — Track packages from your own repository
 
-A package tracking agent you run yourself. It polls carriers, logs updates to your git repository, and can notify you—all without sending your data to a third-party service.
+You can track packages without sharing your data with third-party services.
 
-Live Example: https://the-fleet.casey-digennaro.workers.dev/shiplog
+**Live demo:** https://the-fleet.casey-digennaro.workers.dev/shiplog
 
----
+## Why ShipLog
+Most package tracking services collect and monetize your delivery data. ShipLog runs as your own agent, keeping your tracking numbers and delivery history in your control. Built on the Cocapn open-source agent runtime.
 
-## What This Is For
-You manage packages for projects, teams, or clients. Most trackers are built as data-harvesting SaaS. This is different: you fork the code, deploy it to your own Cloudflare account, and provide your own carrier API keys. Your tracking history and configuration live in your repository, not on a company server.
+## How it works
+ShipLog is a scheduled Cloudflare Worker that:
+1. Reads tracking numbers from your repository's `packages.json` file
+2. Checks status directly with carrier APIs using your credentials
+3. Commits status changes back to your repository
+4. Optionally sends you notifications
 
-It is built on the open-source Cocapn agent runtime, designed for fork-first development.
+Your data stays with you—we never see your tracking numbers, API keys, or delivery information.
 
----
+## Quick start
+1. **Fork this repository** to your GitHub account
+2. Deploy to Cloudflare Workers:
+   ```bash
+   npm install
+   wrangler deploy
+   ```
+3. Add carrier API keys as secrets and tracking numbers to `packages.json`
 
-## How It Works
-- **Self-Deployed Agent:** You deploy this code as a Cloudflare Worker. It executes on your infrastructure.
-- **Repository as Memory:** The agent reads its task list (tracking numbers) from your repository and writes all status updates back as commits.
-- **Scheduled Execution:** It runs on a cron schedule you control, fetching updates from carrier APIs using your stored credentials.
-- **Optional Coordination:** It can send webhook alerts and is compatible with the Cocapn Fleet protocol for inter-agent communication.
-
----
-
-## What It Does
-*   Runs as a scheduled Cloudflare Worker (no servers to manage).
-*   Fetches status from UPS and USPS APIs (extensible to other carriers).
-*   Commits all package status changes directly to your git repository, creating a permanent, auditable log.
-*   Stores all API keys and configuration as secrets in your Worker, never exposed in code.
-*   Can be modified to send notifications via webhook, email, or other agents.
-
----
+## What's included
+- Self-hosted agent running on your Cloudflare account
+- Full audit trail through git commits
+- UPS and USPS carrier support (others require modification)
+- API keys stored as Worker secrets, never committed
+- Configurable schedule via wrangler.toml
+- Zero runtime dependencies
+- Fleet protocol compatible
 
 ## Limitations
-Status accuracy and update frequency depend on the external carrier APIs. This agent polls them but cannot control their data or latency.
+Only UPS and USPS are implemented out of the box. Adding other carriers requires modifying the code in your fork.
 
----
+## Configuration
+Add your carrier API keys after deployment:
+```bash
+wrangler secret put UPS_API_KEY
+wrangler secret put USPS_API_KEY
+```
 
-## Quick Start
-1.  **Fork this repository.**
-2.  Deploy to Cloudflare Workers using Wrangler:
-    ```bash
-    npm install
-    wrangler deploy
-    ```
-3.  Add your carrier API keys as Worker secrets:
-    ```bash
-    wrangler secret put UPS_API_KEY
-    wrangler secret put USPS_API_KEY
-    ```
-4.  Add tracking numbers to the `packages.json` file in your repo and commit. The agent will process them on its next scheduled run.
+Then add tracking numbers to `packages.json` in your repository.
 
----
-
-## Contributing
-The best way to build on ShipLog is to fork it and adapt it to your needs. For bug fixes or minor improvements to the core agent, pull requests are welcome.
-
----
+## Development
+ShipLog follows the Cocapn Fleet fork-first philosophy. The intended way to modify it is to fork the repository and adapt it to your needs. Bug fixes and carrier additions are welcome as pull requests.
 
 ## License
 MIT
@@ -63,7 +56,7 @@ Superinstance & Lucineer (DiGennaro et al.)
 
 ---
 
-<div align="center">
-  <a href="https://the-fleet.casey-digennaro.workers.dev">The Fleet</a> •
-  <a href="https://cocapn.ai">Cocapn</a>
+<div>
+  <strong>Fleet:</strong> <a href="https://the-fleet.casey-digennaro.workers.dev">the-fleet</a> ·
+  <strong>Cocapn:</strong> <a href="https://cocapn.ai">cocapn.ai</a>
 </div>
